@@ -321,6 +321,11 @@ class OsmQuery(MultipleResultsQuery):
     _RESULT_CLASS = OsmResult
     _KEY_MANDATORY = False
 
+    def _build_headers(self, provider_key, **kwargs):
+        """Will be overridden according to the targetted web service"""
+
+        return {"User-Agent": 'My User Agent 1.0'}
+
     def _build_params(self, location, provider_key, **kwargs):
         # backward compatitibility for 'limit' (now maxRows)
         if 'limit' in kwargs:

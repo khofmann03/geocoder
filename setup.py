@@ -1,61 +1,62 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # coding: utf8
 
-from codecs import open
+import os
 import re
+from codecs import open
+from setuptools import find_packages, setup
 
+# Absoluten Pfad des Ordners ermitteln, in dem diese setup.py liegt
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+
+def read_file(*parts):
+    filepath = os.path.join(BASE_DIR, *parts)
+    with open(filepath, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+# Version dynamisch aus geocoder/__init__.py auslesen
+init_content = read_file("geocoder", "__init__.py")
+version_match = re.search(
+    r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', init_content, re.MULTILINE
+)
+
+if not version_match:
+    raise RuntimeError("Cannot find version information")
+
+version = version_match.group(1)
+
+# README einlesen (falls vorhanden)
 try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+    readme = read_file("README.md")
+except FileNotFoundError:
+    readme = "Geocoder is a simple and consistent geocoding library."
 
-with open('geocoder/__init__.py', 'r') as fd:
-    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
-                        fd.read(), re.MULTILINE).group(1)
-
-if not version:
-    raise RuntimeError('Cannot find version information')
-
-with open('README.md', 'r', 'utf-8') as f:
-    readme = f.read()
-
-requires = ['requests', 'ratelim', 'click', 'six', 'future']
+requires = ["requests", "ratelim", "click", "six", "future"]
 
 setup(
-    name='geocoder',
+    name="geocoder",
     version=version,
     description="Geocoder is a simple and consistent geocoding library.",
     long_description=readme,
-    author='Denis Carriere',
-    author_email='carriere.denis@gmail.com',
-    url='https://github.com/DenisCarriere/geocoder',
-    download_url='https://github.com/DenisCarriere/geocoder',
+    long_description_content_type="text/markdown",
+    author="Denis Carriere",
+    author_email="carriere.denis@gmail.com",
+    url="https://github.com/DenisCarriere/geocoder",
     license="The MIT License",
-    entry_points='''
+    entry_points="""
         [console_scripts]
         geocode=geocoder.cli:cli
-    ''',
-    packages=['geocoder'],
-    package_data={'': ['LICENSE', 'README.md']},
-    package_dir={'geocoder': 'geocoder'},
+    """,
+    packages=find_packages(),
     include_package_data=True,
     install_requires=requires,
     zip_safe=False,
-    keywords='geocoder arcgis tomtom opencage google bing here',
     classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: Apache Software License',
-        'Natural Language :: English',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Topic :: Internet',
-        'Topic :: Internet :: WWW/HTTP',
-        'Topic :: Scientific/Engineering :: GIS',
-        'Topic :: Software Development :: Libraries :: Python Modules',
+        "Development Status :: 5 - Production/Stable",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
     ],
 )
